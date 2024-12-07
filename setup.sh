@@ -1,19 +1,15 @@
 #!/usr/bin/env bash
 
-# Configure Streamlit
-mkdir -p ~/.streamlit/
-echo "\
-[general]\n\
-email = \"fernandonakamuta@gmail.com\"\n\
+mkdir -p ~/.streamlit
+echo "[general]
+email = \"fernandonakamuta@gmail.com\"
 " > ~/.streamlit/credentials.toml
 
-echo "\
-[server]\n\
-headless = true\n\
-enableCORS=false\n\
-port = $PORT\n\
+echo "[server]
+headless = true
+enableCORS=false
+port = $PORT
 " > ~/.streamlit/config.toml
 
-# Install the Guardrails validator from the hub
-guardrails configure
+# Non-interactive guardrails configuration
 guardrails hub install hub://tryolabs/restricttotopic
