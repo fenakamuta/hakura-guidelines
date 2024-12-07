@@ -4,7 +4,8 @@ from guardrails.hub import RestrictToTopic
 from guardrails import Guard
 
 # Set page config for a nicer layout and title
-st.set_page_config(page_title="Hakura Orientações Pré-Hospistalares", layout="centered")
+st.set_page_config(page_title="Hakura Orientações Pré-Hospitalares", layout="centered")
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 company_logo_url = "logo.jpg"
 
 # Define the Guard with RestrictToTopic validator
@@ -55,9 +56,8 @@ h1 {
 """, unsafe_allow_html=True)
 
 # Use markdown for a black title
-st.markdown("<h1 style='color: black; text-align: center;'>Hakura Orientações Pré-Hospistalares</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color: black; text-align: center;'>Hakura Orientações Pré-Hospitalares</h1>", unsafe_allow_html=True)
 
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Initialize the OpenAI model
 if "openai_model" not in st.session_state:
