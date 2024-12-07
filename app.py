@@ -1,9 +1,21 @@
 from openai import OpenAI
 import streamlit as st
+from guardrails.hub import RestrictToTopic
+from guardrails import Guard
 
 # Set page config for a nicer layout and title
 st.set_page_config(page_title="Hakura Orientações Pré-Hospistalares", layout="centered")
 company_logo_url = "logo.jpg"
+
+# Define the Guard with RestrictToTopic validator
+guard = Guard().use(
+    RestrictToTopic(
+        valid_topics=["greeting", "health", "accident", "patient", "doctor"],
+        disable_classifier=True,
+        disable_llm=False,
+        on_fail="exception"  # Raise exception on invalid input
+    )
+)
 
 # Inject custom CSS for Poppins font, black fonts, white background, and smaller title
 st.markdown("""
@@ -35,6 +47,9 @@ h1 {
 }
 .st-emotion-cache-janbn0 {
     background-color: #FFFFFF
+}
+.stAlertContainer {
+    color: #000000;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -124,7 +139,6 @@ if "messages" not in st.session_state:
         initial_content = f"Erro ao gerar mensagem inicial: {e}"
         st.session_state.messages.append({"role": "assistant", "content": initial_content})
 
-
 # Display chat messages (excluding system messages)
 for message in st.session_state.messages:
     if message["role"] != "system":
@@ -140,28 +154,35 @@ for message in st.session_state.messages:
 # User input
 prompt = st.chat_input("Digite sua mensagem...")
 if prompt:
-    # Display user message in the chat container (user typically has no avatar or you can set one)
-    with st.chat_message(name="user"):
-        st.write(prompt)
+    # Validate user input with Guard
+    try:
+        guard.validate(prompt)  # Raise exception if validation fails
 
-    # Add user message to the chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+        # Display user message in the chat container (user typically has no avatar)
+        with st.chat_message(name="user"):
+            st.write(prompt)
 
-    # Assistant response with the company logo as avatar
-    with st.chat_message("assistant", avatar=company_logo_url):
-        try:
-            stream = client.chat.completions.create(
-                model=st.session_state["openai_model"],
-                messages=[
-                    {"role": m["role"], "content": m["content"]}
-                    for m in st.session_state.messages
-                ],
-                stream=True,
-            )
-            response = st.write_stream(stream)
-        except Exception as e:
-            response = f"Error: {e}"
-            st.write(response)
+        # Add user message to the chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # Add assistant's response to the history
-    st.session_state.messages.append({"role": "assistant", "content": response})
+        # Assistant response with the company logo as avatar
+        with st.chat_message("assistant", avatar=company_logo_url):
+            try:
+                stream = client.chat.completions.create(
+                    model=st.session_state["openai_model"],
+                    messages=[
+                        {"role": m["role"], "content": m["content"]}
+                        for m in st.session_state.messages
+                    ],
+                    stream=True,
+                )
+                response = st.write_stream(stream)
+            except Exception as e:
+                response = f"Error: {e}"
+                st.write(response)
+
+        # Add assistant's response to the history
+        st.session_state.messages.append({"role": "assistant", "content": response})
+
+    except Exception:
+        st.error("Por favor, insira uma mensagem relacionada a tópicos de saúde ou acidentes.")
