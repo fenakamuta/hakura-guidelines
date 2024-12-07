@@ -1,0 +1,5 @@
+guardrails-ai==0.6.0
+guardrails-api-client==0.4.0a1
+openai==1.57.0
+python-dotenv==1.0.1
+streamlit==1.40.2
