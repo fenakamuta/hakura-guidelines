@@ -551,6 +551,7 @@ dependencies = [
     { name = "guardrails-ai" },
     { name = "guardrails-api-client" },
     { name = "openai" },
+    { name = "python-dotenv" },
     { name = "streamlit" },
 ]
 
@@ -559,6 +560,7 @@ requires-dist = [
     { name = "guardrails-ai", specifier = "==0.6.0" },
     { name = "guardrails-api-client", specifier = "==0.4.0a1" },
     { name = "openai", specifier = ">=1.57.0" },
+    { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "streamlit", specifier = ">=1.40.2" },
 ]
 
