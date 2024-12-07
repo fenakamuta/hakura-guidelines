@@ -3,9 +3,6 @@ import streamlit as st
 from guardrails.hub import RestrictToTopic
 from guardrails import Guard
 
-# Set page config for a nicer layout and title
-st.set_page_config(page_title="Hakura Orientações Pré-Hospitalares", layout="centered")
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 company_logo_url = "logo.jpg"
 
 # Define the Guard with RestrictToTopic validator
@@ -17,6 +14,16 @@ guard = Guard().use(
         on_fail="exception"  # Raise exception on invalid input
     )
 )
+
+
+# Set page config for a nicer layout and title
+st.set_page_config(
+    page_title="Hakura Orientações Pré-Hospistalares", 
+    page_icon=company_logo_url, 
+    layout="centered"
+)
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
 
 # Inject custom CSS for Poppins font, black fonts, white background, and smaller title
 st.markdown("""
