@@ -1,7 +1,46 @@
 from openai import OpenAI
 import streamlit as st
 
-st.title("Hakura Orientações Pré-Hospistalares")
+# Set page config for a nicer layout and title
+st.set_page_config(page_title="Hakura Orientações Pré-Hospistalares", layout="centered")
+company_logo_url = "logo.jpg"
+
+# Inject custom CSS for Poppins font, black fonts, white background, and smaller title
+st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+.stApp {
+    background-color: #FFFFFF;
+}
+.stAppHeader {
+    background-color: #5271ff;
+}
+.st-emotion-cache-hzygls {
+    background-color: #5271ff;
+}
+/* Apply Poppins font and black text */
+body, .stTextInput, .stTextArea, .stMarkdown, .stCodeBlock, .stChatMessage, .css-1d391kg p {
+    color: #000000;
+    font-family: 'Poppins', sans-serif;
+}
+/* Adjust global font size and line height */
+body, input, textarea {
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+/* Make the h1 smaller */
+h1 {
+    font-size: 1.75rem; /* Adjust as desired for smaller title */
+    font-weight: 600;
+}
+.st-emotion-cache-janbn0 {
+    background-color: #FFFFFF
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Use markdown for a black title
+st.markdown("<h1 style='color: black; text-align: center;'>Hakura Orientações Pré-Hospistalares</h1>", unsafe_allow_html=True)
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
@@ -85,24 +124,31 @@ if "messages" not in st.session_state:
         initial_content = f"Erro ao gerar mensagem inicial: {e}"
         st.session_state.messages.append({"role": "assistant", "content": initial_content})
 
+
 # Display chat messages (excluding system messages)
 for message in st.session_state.messages:
-    if message["role"] != "system":  # Skip the system message
-        with st.chat_message(name=message["role"]):
+    if message["role"] != "system":
+        # Use the company logo for assistant messages
+        if message["role"] == "assistant":
+            avatar = company_logo_url
+        else:
+            avatar = None
+
+        with st.chat_message(name=message["role"], avatar=avatar):
             st.write(message["content"])
 
 # User input
 prompt = st.chat_input("Digite sua mensagem...")
 if prompt:
-    # Display user message in the chat container
+    # Display user message in the chat container (user typically has no avatar or you can set one)
     with st.chat_message(name="user"):
         st.write(prompt)
 
     # Add user message to the chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # Display assistant response in chat message container
-    with st.chat_message("assistant"):
+    # Assistant response with the company logo as avatar
+    with st.chat_message("assistant", avatar=company_logo_url):
         try:
             stream = client.chat.completions.create(
                 model=st.session_state["openai_model"],
